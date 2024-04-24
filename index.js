@@ -19,16 +19,26 @@ let allMoneyArrFifteen = [
   0.00001, 0.00258, 0.000089, 0.00874, 0.00259, 0.00096, 0.000123, 0.00657,
 ];
 
+let condT = false;
+
 io.on("connection", function (socket) {
   socket.on("usdRequest", (data) => {
     io.emit("requestUsd", "doen");
   });
 
-  socket.on("runSocket", (info) => {
-    setInterval(handleCounterFifteen, 1000);
+  socket.on("stopSocket", (info) => {
+    condT = info;
   });
 
-  function handleCounterFifteen() {
+  socket.on("runSocket", (info) => {
+    condT = false;
+
+    let sstop = setInterval(() => handleCounterFifteen(sstop), 1000);
+  });
+
+  // stopSocket
+
+  function handleCounterFifteen(sstop) {
     let evenOrOdd =
       Math.floor(Math.random() * 8 + 1) % 2 === 0 ? "even" : "odd";
     let indexNumber = Math.floor(Math.random() * allMoneyArrFifteen.length);
@@ -46,6 +56,10 @@ io.on("connection", function (socket) {
       io.emit("socketRun", {
         data: balanceValue,
       });
+    }
+
+    if (condT) {
+      clearInterval(sstop);
     }
   }
 });
